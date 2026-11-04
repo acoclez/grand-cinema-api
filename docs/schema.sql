@@ -183,7 +183,7 @@ DROP TABLE IF EXISTS `reservations`;
 CREATE TABLE `reservations` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `numero` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Numéro lisible communiqué au spectateur',
-  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Null pour une vente au guichet ou un compte supprime',
+  `user_id` bigint unsigned DEFAULT NULL COMMENT 'Null pour une vente au guichet ou un compte supprimé',
   `seance_id` bigint unsigned NOT NULL,
   `statut` enum('en_attente','confirmee','annulee','expiree') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en_attente',
   `canal` enum('en_ligne','guichet') COLLATE utf8mb4_unicode_ci NOT NULL,

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->string('numero', 12)->unique()->comment('Numéro lisible communiqué au spectateur');
-            $table->foreignId('user_id')->nullable()->comment('Null pour une vente au guichet ou un compte supprime')->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->comment('Null pour une vente au guichet ou un compte supprimé')->constrained()->nullOnDelete();
             $table->foreignId('seance_id')->constrained()->restrictOnDelete();
             $table->enum('statut', StatutReservation::valeurs())->default(StatutReservation::EnAttente->value);
             $table->enum('canal', CanalVente::valeurs());

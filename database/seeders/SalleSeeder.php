@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 class SalleSeeder extends Seeder
 {
     /**
-     * Nombre de places réservées aux personnes à mobilité réduit au début de la première rangée.
+     * Nombre de places réservées aux personnes à mobilité réduite au début de la première rangée.
      */
     private const int PLACES_PMR_PAR_SALLE = 4;
 
