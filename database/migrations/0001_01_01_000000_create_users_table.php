@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RoleUtilisateur;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +14,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('prenom', 100);
+            $table->string('nom', 100);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', RoleUtilisateur::valeurs())->default(RoleUtilisateur::Spectateur->value);
+            $table->string('pays_residence', 2)->nullable()->comment('Code pays ISO 3166-1 alpha-2');
+            $table->boolean('consentement_emails')->default(false);
+            $table->timestamp('anonymise_at')->nullable()->comment('Date de suppression du compte (données personnelles effacées)');
             $table->rememberToken();
             $table->timestamps();
         });
