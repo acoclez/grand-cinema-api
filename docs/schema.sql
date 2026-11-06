@@ -83,6 +83,7 @@ CREATE TABLE `films` (
   `duree_minutes` smallint unsigned NOT NULL,
   `genre` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `classification` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tous publics, -12, -16, -18',
+  `langue_originale` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `affiche_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `bande_annonce_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `archive_at` timestamp NULL DEFAULT NULL COMMENT 'Film retiré du site public, conservé pour les statistiques',

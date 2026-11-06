@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ClassificationFilm;
 use App\Models\Film;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +21,8 @@ class FilmFactory extends Factory
             'synopsis' => fake()->paragraph(),
             'duree_minutes' => fake()->numberBetween(80, 180),
             'genre' => fake()->randomElement(['Drame', 'Comédie', 'Documentaire', 'Animation', 'Thriller']),
-            'classification' => fake()->randomElement(['Tous publics', '-12', '-16']),
+            'classification' => fake()->randomElement([ClassificationFilm::TousPublics, ClassificationFilm::Moins12, ClassificationFilm::Moins16]),
+            'langue_originale' => fake()->randomElement(['Français', 'Anglais', 'Italien', 'Japonais']),
             'affiche_url' => null,
             'bande_annonce_url' => null,
             'archive_at' => null,

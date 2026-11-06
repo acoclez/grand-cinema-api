@@ -29,4 +29,16 @@ class DocumentationApiTest extends TestCase
                 '/auth/reinitialiser-mot-de-passe',
             ]]);
     }
+
+    public function test_la_documentation_decrit_la_gestion_des_films(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => [
+                '/admin/films' => ['get', 'post'],
+                '/admin/films/{film}' => ['get', 'put'],
+                '/admin/films/{film}/archiver' => ['post'],
+                '/admin/films/{film}/restaurer' => ['post'],
+            ]]);
+    }
 }

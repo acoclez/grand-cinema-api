@@ -11,9 +11,14 @@
 
 return [
     'accepted' => 'Vous devez accepter :attribute.',
+    'between' => [
+        'numeric' => 'Le champ :attribute doit être compris entre :min et :max.',
+    ],
     'boolean' => 'Le champ :attribute doit être vrai ou faux.',
     'confirmed' => 'La confirmation du champ :attribute ne correspond pas.',
     'email' => 'Le champ :attribute doit être une adresse e-mail valide.',
+    'enum' => 'La valeur du champ :attribute n\'est pas valide.',
+    'integer' => 'Le champ :attribute doit être un nombre entier.',
     'max' => [
         'string' => 'Le champ :attribute ne doit pas dépasser :max caractères.',
     ],
@@ -23,6 +28,7 @@ return [
     'required' => 'Le champ :attribute est obligatoire.',
     'string' => 'Le champ :attribute doit être une chaîne de caractères.',
     'unique' => 'Cette valeur du champ :attribute est déjà utilisée.',
+    'url' => 'Le champ :attribute doit être une adresse web valide, commençant par https://.',
 
     'custom' => [
         'email' => [
@@ -38,5 +44,14 @@ return [
         'consentement_emails' => 'consentement aux e-mails',
         'conditions_acceptees' => 'les conditions générales de vente',
         'token' => 'lien de réinitialisation',
+        'titre' => 'titre',
+        'synopsis' => 'synopsis',
+        'duree_minutes' => 'durée',
+        'genre' => 'genre',
+        'classification' => 'classification',
+        'langue_originale' => 'langue originale',
+        'affiche_url' => 'affiche',
+        'bande_annonce_url' => 'bande-annonce',
+        'archives' => 'films archivés',
     ],
 ];
