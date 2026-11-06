@@ -36,7 +36,8 @@ erDiagram
         text synopsis
         smallint duree_minutes
         string genre
-        string classification
+        string classification "Tous publics, -12, -16, -18"
+        string langue_originale
         string affiche_url
         string bande_annonce_url
         datetime archive_at
@@ -107,4 +108,5 @@ erDiagram
 - Une vente au guichet est une réservation sans compte spectateur (`user_id` null), avec le canal `guichet`, pour partager le même stock de places que le site.
 - La suppression d'un compte efface les données personnelles et renseigne `anonymise_at` ; les réservations passées restent rattachées à rien d'identifiable, pour les statistiques.
 - Un film archivé (`archive_at`) ou une séance en brouillon n'apparaissent pas sur le site public mais restent en base.
+- La langue originale est une propriété du film (`langue_originale`) ; la version projetée, VO ou VF, est une propriété de la séance (`langue`), car un même film peut être projeté dans les deux versions.
 - Les tarifs sont définis par séance, comme le prévoit la user story de gestion des séances.
