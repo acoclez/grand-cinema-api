@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Middleware\VerifierRole;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias(['role' => VerifierRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
@@ -27,5 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
             : null);
         $exceptions->render(fn (ThrottleRequestsException $e, Request $request) => $request->is('api/*')
             ? response()->json(['message' => 'Trop de tentatives. Réessayez dans une minute.'], 429, $e->getHeaders())
+            : null);
+        // Identifiant inconnu (film inexistant, faute de frappe): message sans détail technique.
+        $exceptions->render(fn (NotFoundHttpException $e, Request $request) => $request->is('api/*')
+            ? response()->json(['message' => 'Ressource introuvable.'], 404)
             : null);
     })->create();
