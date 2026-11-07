@@ -11,18 +11,25 @@
 
 return [
     'accepted' => 'Vous devez accepter :attribute.',
+    'after' => 'Le champ :attribute doit être une date postérieure au :date.',
+    'array' => 'Le champ :attribute doit être une liste.',
     'between' => [
         'numeric' => 'Le champ :attribute doit être compris entre :min et :max.',
     ],
     'boolean' => 'Le champ :attribute doit être vrai ou faux.',
     'confirmed' => 'La confirmation du champ :attribute ne correspond pas.',
+    'date_format' => 'Le champ :attribute ne correspond pas au format :format.',
+    'distinct' => 'Le champ :attribute a une valeur en double.',
     'email' => 'Le champ :attribute doit être une adresse e-mail valide.',
     'enum' => 'La valeur du champ :attribute n\'est pas valide.',
+    'exists' => 'La valeur du champ :attribute n\'existe pas.',
     'integer' => 'Le champ :attribute doit être un nombre entier.',
     'max' => [
+        'array' => 'Le champ :attribute ne doit pas contenir plus de :max éléments.',
         'string' => 'Le champ :attribute ne doit pas dépasser :max caractères.',
     ],
     'min' => [
+        'array' => 'Le champ :attribute doit contenir au moins :min élément.',
         'string' => 'Le champ :attribute doit contenir au moins :min caractères.',
     ],
     'required' => 'Le champ :attribute est obligatoire.',
@@ -33,6 +40,20 @@ return [
     'custom' => [
         'email' => [
             'unique' => 'Un compte existe déjà avec cette adresse e-mail.',
+        ],
+        'film_id' => [
+            'exists' => 'Ce film n\'existe pas ou n\'est plus à l\'affiche.',
+        ],
+        'debut' => [
+            'after' => 'La séance doit commencer dans le futur.',
+            'date_format' => 'Indiquez la date et l’heure de la séance.',
+        ],
+        'tarifs' => [
+            'required' => 'Ajoutez au moins un tarif.',
+            'min' => 'Ajoutez au moins un tarif.',
+        ],
+        'tarifs.*.libelle' => [
+            'distinct' => 'Deux tarifs ne peuvent pas avoir le même libellé.',
         ],
     ],
 
@@ -53,5 +74,14 @@ return [
         'affiche_url' => 'affiche',
         'bande_annonce_url' => 'bande-annonce',
         'archives' => 'films archivés',
+        'par_page' => 'nombre par page',
+        'film_id' => 'film',
+        'salle_id' => 'salle',
+        'debut' => 'début',
+        'langue' => 'langue',
+        'tarifs' => 'tarifs',
+        'tarifs.*.libelle' => 'libellé du tarif',
+        'tarifs.*.prix_centimes' => 'prix du tarif',
+        'date' => 'date',
     ],
 ];

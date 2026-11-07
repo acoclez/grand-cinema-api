@@ -21,19 +21,21 @@ class FilmController extends Controller
     /**
      * Lister les films.
      *
-     * Par ordre alphabétique, 20 par page. Les films archivés ne sont inclus qu'avec archives=1.
+     * Par ordre alphabétique, 20 par page par défaut (par_page, jusqu'à 100). Les films archivés ne sont inclus qu'avec archives=1.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
         $request->validate([
             // Inclure les films archivés.
             'archives' => ['sometimes', 'boolean'],
+            // La liste de choix du formulaire de séance demande tous les films à l'affiche d'un coup.
+            'par_page' => ['sometimes', 'integer', 'between:1,100'],
         ]);
 
         $films = Film::query()
             ->unless($request->boolean('archives'), fn ($requete) => $requete->aLAffiche())
             ->orderBy('titre')
-            ->paginate(20);
+            ->paginate($request->integer('par_page', 20));
 
         return FilmResource::collection($films);
     }
