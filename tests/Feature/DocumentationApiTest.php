@@ -54,4 +54,14 @@ class DocumentationApiTest extends TestCase
                 '/admin/seances/{seance}/depublier' => ['post'],
             ]]);
     }
+
+    public function test_la_documentation_decrit_les_films_a_l_affiche(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => [
+                '/films' => ['get'],
+                '/films/{film}' => ['get'],
+            ]]);
+    }
 }

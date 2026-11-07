@@ -5,6 +5,7 @@ use App\Http\Controllers\Administration\SalleController;
 use App\Http\Controllers\Administration\SeanceController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
+use App\Http\Controllers\Programmation\FilmAlAfficheController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +24,12 @@ use Illuminate\Support\Facades\Route;
  * @unauthenticated
  */
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
+
+// Consulter les films à l'affiche, sans compte
+Route::prefix('films')->name('films.')->group(function (): void {
+    Route::get('/', [FilmAlAfficheController::class, 'index'])->name('index');
+    Route::get('{film}', [FilmAlAfficheController::class, 'show'])->whereNumber('film')->name('show');
+});
 
 // Créer un compte et se connecter
 Route::prefix('auth')->name('auth.')->group(function (): void {
