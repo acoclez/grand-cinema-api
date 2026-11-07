@@ -26,7 +26,7 @@ class FilmAlAfficheController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return FilmAlAfficheResource::collection(Film::aLAffiche()->orderBy('titre')->get());
+        return FilmAlAfficheResource::collection(Film::query()->aLAffiche()->orderBy('titre')->get());
     }
 
     /**
@@ -40,6 +40,6 @@ class FilmAlAfficheController extends Controller
      */
     public function show(int $film): FilmAlAfficheResource
     {
-        return new FilmAlAfficheResource(Film::aLAffiche()->findOrFail($film));
+        return new FilmAlAfficheResource(Film::query()->aLAffiche()->findOrFail($film));
     }
 }
