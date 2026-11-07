@@ -66,7 +66,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Les horaires des séances sont saisis, enregistrés et affichés à l'heure de Paris.
+    'timezone' => 'Europe/Paris',
 
     /*
     |--------------------------------------------------------------------------

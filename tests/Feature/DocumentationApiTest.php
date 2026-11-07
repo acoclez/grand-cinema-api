@@ -41,4 +41,17 @@ class DocumentationApiTest extends TestCase
                 '/admin/films/{film}/restaurer' => ['post'],
             ]]);
     }
+
+    public function test_la_documentation_decrit_la_gestion_des_salles_et_des_seances(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => [
+                '/admin/salles' => ['get'],
+                '/admin/seances' => ['get', 'post'],
+                '/admin/seances/{seance}' => ['get', 'put', 'delete'],
+                '/admin/seances/{seance}/publier' => ['post'],
+                '/admin/seances/{seance}/depublier' => ['post'],
+            ]]);
+    }
 }

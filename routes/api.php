@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Administration\FilmController;
+use App\Http\Controllers\Administration\SalleController;
+use App\Http\Controllers\Administration\SeanceController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use Illuminate\Support\Facades\Route;
@@ -48,5 +50,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth:api')->group(function (
         Route::put('films/{film}', [FilmController::class, 'update'])->name('films.update');
         Route::post('films/{film}/archiver', [FilmController::class, 'archiver'])->name('films.archiver');
         Route::post('films/{film}/restaurer', [FilmController::class, 'restaurer'])->name('films.restaurer');
+
+        // Gérer les salles et les séances
+        Route::get('salles', [SalleController::class, 'index'])->name('salles.index');
+        Route::get('seances', [SeanceController::class, 'index'])->name('seances.index');
+        Route::post('seances', [SeanceController::class, 'store'])->name('seances.store');
+        Route::get('seances/{seance}', [SeanceController::class, 'show'])->name('seances.show');
+        Route::put('seances/{seance}', [SeanceController::class, 'update'])->name('seances.update');
+        Route::delete('seances/{seance}', [SeanceController::class, 'destroy'])->name('seances.destroy');
+        Route::post('seances/{seance}/publier', [SeanceController::class, 'publier'])->name('seances.publier');
+        Route::post('seances/{seance}/depublier', [SeanceController::class, 'depublier'])->name('seances.depublier');
     });
 });
