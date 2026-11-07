@@ -180,7 +180,7 @@ class GestionSeancesTest extends TestCase
 
         $this->postJson(route('admin.seances.depublier', $seance))
             ->assertConflict()
-            ->assertExactJson(['message' => 'Des places sont déjà vendues pour cette séance : elle ne peut pas être dépubliée.']);
+            ->assertExactJson(['message' => 'Des places sont déjà vendues pour cette séance: elle ne peut pas être dépubliée.']);
 
         $this->assertSame(StatutSeance::Publiee, $seance->refresh()->statut);
     }
@@ -192,7 +192,7 @@ class GestionSeancesTest extends TestCase
 
         $this->putJson(route('admin.seances.update', $seance), $this->donneesSeance(['debut' => '2026-11-21T14:00']))
             ->assertConflict()
-            ->assertJsonPath('message', 'Des places sont déjà vendues pour cette séance : elle ne peut plus être modifiée.');
+            ->assertJsonPath('message', 'Des places sont déjà vendues pour cette séance: elle ne peut plus être modifiée.');
 
         $this->assertTrue($seance->refresh()->debut->equalTo(Carbon::parse('2026-11-20 20:30')));
     }
@@ -219,7 +219,7 @@ class GestionSeancesTest extends TestCase
 
         $this->postJson(route('admin.seances.publier', $seance))
             ->assertConflict()
-            ->assertJsonPath('message', 'Le film de cette séance est archivé : remettez-le à l\'affiche avant de publier la séance.');
+            ->assertJsonPath('message', 'Le film de cette séance est archivé: remettez-le à l\'affiche avant de publier la séance.');
 
         $this->assertSame(StatutSeance::Brouillon, $seance->refresh()->statut);
     }
@@ -230,7 +230,7 @@ class GestionSeancesTest extends TestCase
 
         $this->postJson(route('admin.seances.publier', $seance))
             ->assertConflict()
-            ->assertJsonPath('message', 'Cette séance a déjà commencé : elle ne peut plus être publiée.');
+            ->assertJsonPath('message', 'Cette séance a déjà commencé: elle ne peut plus être publiée.');
     }
 
     public function test_seul_un_brouillon_peut_etre_supprime(): void
@@ -244,7 +244,7 @@ class GestionSeancesTest extends TestCase
 
         $this->deleteJson(route('admin.seances.destroy', $publiee))
             ->assertConflict()
-            ->assertJsonPath('message', 'Seule une séance en brouillon peut être supprimée : dépubliez-la d\'abord.');
+            ->assertJsonPath('message', 'Seule une séance en brouillon peut être supprimée: dépubliez-la d\'abord.');
         $this->assertModelExists($publiee);
     }
 
