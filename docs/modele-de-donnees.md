@@ -110,3 +110,5 @@ erDiagram
 - Un film archivé (`archive_at`) ou une séance en brouillon n'apparaissent pas sur le site public mais restent en base.
 - La langue originale est une propriété du film (`langue_originale`) ; la version projetée, VO ou VF, est une propriété de la séance (`langue`), car un même film peut être projeté dans les deux versions.
 - Les tarifs sont définis par séance, comme le prévoit la user story de gestion des séances.
+- Les horaires des séances sont enregistrés à l'heure de Paris, le fuseau de l'application: l'heure saisie par l'administrateur est celle affichée aux spectateurs.
+- Une séance dont des places sont vendues (au moins un billet) ne peut plus être modifiée ni dépubliée, et seule une séance en brouillon peut être supprimée.
