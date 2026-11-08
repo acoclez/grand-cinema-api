@@ -6,10 +6,14 @@ use App\Models\User;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -31,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Un compte supprimé (anonymisé) n'est plus reconnu: ni connexion, ni réinitialisation
+        // du mot de passe, ni accès avec un jeton délivré avant la suppression.
+        Auth::provider('comptes-actifs', fn (Application $app, array $config) => (new EloquentUserProvider($app->make('hash'), $config['model']))
+            ->withQuery(fn (Builder $comptes) => $comptes->whereNull('anonymise_at')));
+
         // Un mot de passe compte au moins 12 caractères.
         Password::defaults(fn () => Password::min(12));
 

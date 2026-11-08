@@ -19,11 +19,13 @@ return [
     ],
     'boolean' => 'Le champ :attribute doit être vrai ou faux.',
     'confirmed' => 'La confirmation du champ :attribute ne correspond pas.',
+    'current_password' => 'Le mot de passe est incorrect.',
     'date_format' => 'Le champ :attribute ne correspond pas au format :format.',
     'distinct' => 'Le champ :attribute a une valeur en double.',
     'email' => 'Le champ :attribute doit être une adresse e-mail valide.',
     'enum' => 'La valeur du champ :attribute n\'est pas valide.',
     'exists' => 'La valeur du champ :attribute n\'existe pas.',
+    'in' => 'La valeur du champ :attribute n\'est pas valide.',
     'integer' => 'Le champ :attribute doit être un nombre entier.',
     'max' => [
         'array' => 'Le champ :attribute ne doit pas contenir plus de :max éléments.',
@@ -33,6 +35,7 @@ return [
         'array' => 'Le champ :attribute doit contenir au moins :min élément.',
         'string' => 'Le champ :attribute doit contenir au moins :min caractères.',
     ],
+    'present' => 'Le champ :attribute doit être envoyé, même vide.',
     'required' => 'Le champ :attribute est obligatoire.',
     'string' => 'Le champ :attribute doit être une chaîne de caractères.',
     'unique' => 'Cette valeur du champ :attribute est déjà utilisée.',
@@ -41,6 +44,9 @@ return [
     'custom' => [
         'email' => [
             'unique' => 'Un compte existe déjà avec cette adresse e-mail.',
+        ],
+        'pays_residence' => [
+            'in' => 'Choisissez un pays dans la liste.',
         ],
         'film_id' => [
             'exists' => 'Ce film n\'existe pas ou n\'est plus à l\'affiche.',
@@ -68,6 +74,7 @@ return [
         'email' => 'adresse e-mail',
         'password' => 'mot de passe',
         'consentement_emails' => 'consentement aux e-mails',
+        'pays_residence' => 'pays de résidence',
         'conditions_acceptees' => 'les conditions générales de vente',
         'token' => 'lien de réinitialisation',
         'titre' => 'titre',
