@@ -112,3 +112,4 @@ erDiagram
 - Les tarifs sont définis par séance, comme le prévoit la user story de gestion des séances.
 - Les horaires des séances sont enregistrés à l'heure de Paris, le fuseau de l'application: l'heure saisie par l'administrateur est celle affichée aux spectateurs.
 - Une séance dont des places sont vendues (au moins un billet) ne peut plus être modifiée ni dépubliée, et seule une séance en brouillon peut être supprimée.
+- Les places restantes d'une séance ne sont pas stockées: elles se calculent à partir de la capacité de la salle moins le nombre de billets de la séance, ce qui évite un compteur à tenir à jour. La séance est annoncée « Bientôt complet » à partir de 90 % de places vendues, et « Complet » quand il n'en reste plus.

@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
  * Films à l'affiche, consultables par tous les visiteurs, sans compte.
  * Un film archivé par l'administrateur n'apparaît plus et sa fiche répond 404.
  */
-#[Group('Programmation', 'Films à l’affiche et leur fiche, consultables sans compte (US-01).')]
+#[Group('Programmation', 'Films à l’affiche, fiche d’un film (US-01) et séances d’une date avec leurs places restantes (US-02), consultables sans compte.')]
 class FilmAlAfficheController extends Controller
 {
     /**
