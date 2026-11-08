@@ -29,6 +29,9 @@ class Seance extends Model
     /** Temps de nettoyage entre deux séances d'une même salle, en minutes. */
     public const int NETTOYAGE_MINUTES = 15;
 
+    /** Part des places vendues à partir de laquelle la séance est annoncée « Bientôt complet ». */
+    public const float SEUIL_BIENTOT_COMPLET = 0.9;
+
     /**
      * @return array<string, string>
      */
@@ -110,6 +113,31 @@ class Seance extends Model
         $compte = $this->getAttribute('billets_count');
 
         return is_int($compte) ? $compte : $this->billets()->count();
+    }
+
+    /**
+     * Places encore libres: capacité de la salle moins les places vendues ou bloquées.
+     */
+    public function placesRestantes(): int
+    {
+        return max(0, $this->salle->capacite - $this->placesVendues());
+    }
+
+    /**
+     * Plus aucune place libre: la séance ne se réserve plus.
+     */
+    public function estComplete(): bool
+    {
+        return $this->placesRestantes() === 0;
+    }
+
+    /**
+     * Au moins 90 % des places sont vendues, sans que la séance soit complète.
+     */
+    public function estBientotComplete(): bool
+    {
+        return ! $this->estComplete()
+            && $this->placesVendues() >= $this->salle->capacite * self::SEUIL_BIENTOT_COMPLET;
     }
 
     /**

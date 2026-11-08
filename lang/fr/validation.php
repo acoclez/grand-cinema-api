@@ -12,6 +12,7 @@
 return [
     'accepted' => 'Vous devez accepter :attribute.',
     'after' => 'Le champ :attribute doit être une date postérieure au :date.',
+    'after_or_equal' => 'Le champ :attribute doit être une date postérieure ou égale au :date.',
     'array' => 'Le champ :attribute doit être une liste.',
     'between' => [
         'numeric' => 'Le champ :attribute doit être compris entre :min et :max.',
@@ -43,6 +44,10 @@ return [
         ],
         'film_id' => [
             'exists' => 'Ce film n\'existe pas ou n\'est plus à l\'affiche.',
+        ],
+        'date' => [
+            'after_or_equal' => 'Les séances passées ne sont plus proposées: choisissez aujourd’hui ou une date à venir.',
+            'date_format' => 'Indiquez une date au format AAAA-MM-JJ.',
         ],
         'debut' => [
             'after' => 'La séance doit commencer dans le futur.',

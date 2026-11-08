@@ -6,6 +6,7 @@ use App\Http\Controllers\Administration\SeanceController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Programmation\FilmAlAfficheController;
+use App\Http\Controllers\Programmation\SeancePubliqueController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,9 @@ Route::prefix('films')->name('films.')->group(function (): void {
     Route::get('/', [FilmAlAfficheController::class, 'index'])->name('index');
     Route::get('{film}', [FilmAlAfficheController::class, 'show'])->whereNumber('film')->name('show');
 });
+
+// Consulter les séances et les places restantes, sans compte
+Route::get('seances', [SeancePubliqueController::class, 'index'])->name('seances.index');
 
 // Créer un compte et se connecter
 Route::prefix('auth')->name('auth.')->group(function (): void {
