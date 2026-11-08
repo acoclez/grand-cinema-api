@@ -18,7 +18,7 @@ use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 /**
  * Création de compte, connexion et gestion du jeton d'accès (JWT).
  */
-#[Group('Comptes', 'Création de compte, connexion, jeton d’accès et mot de passe oublié (US-05).')]
+#[Group('Comptes', 'Création de compte, connexion, jeton d’accès et mot de passe oublié (US-05). Modification des informations et suppression du compte (US-06).')]
 class AuthentificationController extends Controller
 {
     /**

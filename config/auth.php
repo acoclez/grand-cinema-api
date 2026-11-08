@@ -69,7 +69,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
+            // Eloquent, sans les comptes supprimés (voir AppServiceProvider).
+            'driver' => 'comptes-actifs',
             'model' => env('AUTH_MODEL', User::class),
         ],
 

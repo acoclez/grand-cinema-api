@@ -5,6 +5,7 @@ use App\Http\Controllers\Administration\SalleController;
 use App\Http\Controllers\Administration\SeanceController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
+use App\Http\Controllers\Comptes\ProfilController;
 use App\Http\Controllers\Programmation\FilmAlAfficheController;
 use App\Http\Controllers\Programmation\SeancePubliqueController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,10 @@ Route::prefix('auth')->name('auth.')->group(function (): void {
 
     Route::middleware('auth:api')->group(function (): void {
         Route::get('moi', [AuthentificationController::class, 'moi'])->name('moi');
+
+        // Gérer ses données personnelles
+        Route::put('moi', [ProfilController::class, 'update'])->name('moi.modifier');
+        Route::delete('moi', [ProfilController::class, 'destroy'])->middleware('role:spectateur')->name('moi.supprimer');
         Route::post('rafraichir', [AuthentificationController::class, 'rafraichir'])->name('rafraichir');
         Route::post('deconnexion', [AuthentificationController::class, 'deconnexion'])->name('deconnexion');
     });

@@ -106,7 +106,7 @@ erDiagram
 - Aucune donnée de carte bancaire n'est stockée : la table `paiements` ne garde que la référence du paiement chez le prestataire et son statut.
 - Une réservation en attente bloque ses places jusqu'à `expire_at` (10 minutes) ; passé ce délai, elle est expirée et ses billets supprimés, ce qui libère les places.
 - Une vente au guichet est une réservation sans compte spectateur (`user_id` null), avec le canal `guichet`, pour partager le même stock de places que le site.
-- La suppression d'un compte efface les données personnelles et renseigne `anonymise_at` ; les réservations passées restent rattachées à rien d'identifiable, pour les statistiques.
+- La suppression d'un compte efface les données personnelles et renseigne `anonymise_at` ; les réservations passées restent rattachées à rien d'identifiable, pour les statistiques. Le nom devient "Compte supprimé", l'adresse e-mail une adresse fictive unique en `.invalid`, le mot de passe une valeur aléatoire, et le consentement est retiré. Le pays de résidence est conservé: seul, il n'identifie personne et sert à l'indicateur O5. Un compte anonymisé n'est plus reconnu par l'authentification, même avec un jeton délivré avant la suppression.
 - Un film archivé (`archive_at`) ou une séance en brouillon n'apparaissent pas sur le site public mais restent en base.
 - La langue originale est une propriété du film (`langue_originale`) ; la version projetée, VO ou VF, est une propriété de la séance (`langue`), car un même film peut être projeté dans les deux versions.
 - Les tarifs sont définis par séance, comme le prévoit la user story de gestion des séances.

@@ -22,7 +22,7 @@ class DocumentationApiTest extends TestCase
             ->assertJsonStructure(['paths' => [
                 '/auth/inscription',
                 '/auth/connexion',
-                '/auth/moi',
+                '/auth/moi' => ['get', 'put', 'delete'],
                 '/auth/rafraichir',
                 '/auth/deconnexion',
                 '/auth/mot-de-passe-oublie',
