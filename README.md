@@ -50,3 +50,4 @@ Prérequis : PHP 8.5, Composer, une base MySQL `grand_cinema` (voir `.env.exampl
 | `vendor/bin/phpunit --coverage-html coverage` | Tests avec rapport de couverture |
 | `vendor/bin/pint --test` | Vérification du style de code |
 | `vendor/bin/phpstan analyse` | Analyse statique |
+| `php artisan schedule:work` | Tâches planifiées en local, dont l'expiration des réservations non payées chaque minute (en production, `php artisan schedule:run` lancé chaque minute) |

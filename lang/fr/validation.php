@@ -66,6 +66,15 @@ return [
         'tarifs.*.libelle' => [
             'distinct' => 'Deux tarifs ne peuvent pas avoir le même libellé.',
         ],
+        'places' => [
+            'required' => 'Choisissez au moins une place.',
+            'min' => 'Choisissez au moins une place.',
+            'max' => 'Vous pouvez choisir :max places au maximum.',
+        ],
+        'places.*' => [
+            'distinct' => 'Une même place est choisie deux fois.',
+            'exists' => 'Cette place n\'existe pas dans la salle de la séance.',
+        ],
     ],
 
     'attributes' => [

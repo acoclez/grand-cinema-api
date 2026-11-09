@@ -98,6 +98,32 @@ class Seance extends Model
     }
 
     /**
+     * La séance apparaît sur le site public: publiée et film à l'affiche.
+     */
+    public function estVisibleDuPublic(): bool
+    {
+        return $this->statut === StatutSeance::Publiee && ! $this->film->estArchive();
+    }
+
+    /**
+     * Des places peuvent encore être réservées: la séance n'a pas commencé.
+     */
+    public function estReservable(): bool
+    {
+        return $this->estVisibleDuPublic() && $this->debut->isFuture();
+    }
+
+    /**
+     * @throws RegleMetierException
+     */
+    public function verifierReservable(): void
+    {
+        if (! $this->estReservable()) {
+            throw new RegleMetierException('Cette séance a déjà commencé: ses places ne se réservent plus.');
+        }
+    }
+
+    /**
      * Fin de la projection: début plus durée du film, sans le temps de nettoyage.
      */
     public function fin(): Carbon
