@@ -42,7 +42,9 @@ class SeanceResource extends JsonResource
                 'libelle' => $tarif->libelle,
                 'prix_centimes' => $tarif->prix_centimes,
             ])->values()->all(),
+            // Toutes les places prises, y compris celles bloquées en attente de paiement.
             'places_vendues' => $this->placesVendues(),
+            'remplissage' => $this->remplissage(),
         ];
     }
 }

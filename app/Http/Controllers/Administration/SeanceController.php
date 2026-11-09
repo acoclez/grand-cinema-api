@@ -26,6 +26,8 @@ class SeanceController extends Controller
     /**
      * Lister les séances d'un jour.
      * Toutes les salles par défaut, ou une seule avec salle_id. Les séances sont triées par heure de début.
+     * Chaque séance donne son remplissage: places vendues en ligne et au guichet, places en attente
+     * de paiement et taux de remplissage, relus en base à chaque appel.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -39,7 +41,7 @@ class SeanceController extends Controller
 
         $seances = Seance::query()
             ->with(['film', 'salle', 'tarifs'])
-            ->withCount('billets')
+            ->withCount(Seance::comptesDeRemplissage())
             ->whereBetween('debut', [$jour->copy()->startOfDay(), $jour->copy()->endOfDay()])
             ->when($request->filled('salle_id'), fn ($requete) => $requete->where('salle_id', $request->integer('salle_id')))
             ->orderBy('debut')
@@ -139,6 +141,6 @@ class SeanceController extends Controller
 
     private function charger(Seance $seance): Seance
     {
-        return $seance->load(['film', 'salle', 'tarifs'])->loadCount('billets');
+        return $seance->load(['film', 'salle', 'tarifs'])->loadCount(Seance::comptesDeRemplissage());
     }
 }
