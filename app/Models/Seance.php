@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\CanalVente;
 use App\Enums\LangueSeance;
+use App\Enums\StatutReservation;
 use App\Enums\StatutSeance;
 use App\Exceptions\RegleMetierException;
 use Database\Factories\SeanceFactory;
@@ -138,6 +140,49 @@ class Seance extends Model
     {
         return ! $this->estComplete()
             && $this->placesVendues() >= $this->salle->capacite * self::SEUIL_BIENTOT_COMPLET;
+    }
+
+    /**
+     * Comptes à charger avec withCount ou loadCount pour le remplissage: tous les billets,
+     * les billets des réservations confirmées par canal de vente, et ceux des réservations
+     * en attente de paiement. Les chiffres sont relus en base à chaque appel.
+     *
+     * @return array<int|string, mixed>
+     */
+    public static function comptesDeRemplissage(): array
+    {
+        return [
+            'billets',
+            'billets as billets_en_ligne_count' => fn ($billets) => $billets->whereHas('reservation', fn ($reservation) => $reservation
+                ->where('statut', StatutReservation::Confirmee)
+                ->where('canal', CanalVente::EnLigne)),
+            'billets as billets_guichet_count' => fn ($billets) => $billets->whereHas('reservation', fn ($reservation) => $reservation
+                ->where('statut', StatutReservation::Confirmee)
+                ->where('canal', CanalVente::Guichet)),
+            'billets as billets_en_attente_count' => fn ($billets) => $billets->whereHas('reservation', fn ($reservation) => $reservation
+                ->where('statut', StatutReservation::EnAttente)),
+        ];
+    }
+
+    /**
+     * Remplissage de la séance (indicateur O4): places vendues en ligne et au guichet,
+     * places bloquées par une réservation en attente de paiement, et taux de remplissage
+     * en pourcentage arrondi. Seules les ventes confirmées comptent dans le taux.
+     * Les comptes viennent de comptesDeRemplissage().
+     *
+     * @return array{en_ligne: int, guichet: int, en_attente: int, taux: int}
+     */
+    public function remplissage(): array
+    {
+        $enLigne = (int) $this->getAttribute('billets_en_ligne_count');
+        $guichet = (int) $this->getAttribute('billets_guichet_count');
+
+        return [
+            'en_ligne' => $enLigne,
+            'guichet' => $guichet,
+            'en_attente' => (int) $this->getAttribute('billets_en_attente_count'),
+            'taux' => (int) round(($enLigne + $guichet) * 100 / max(1, $this->salle->capacite)),
+        ];
     }
 
     /**
