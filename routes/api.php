@@ -8,6 +8,8 @@ use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Comptes\ProfilController;
 use App\Http\Controllers\Programmation\FilmAlAfficheController;
 use App\Http\Controllers\Programmation\SeancePubliqueController;
+use App\Http\Controllers\Reservations\PlanDeSalleController;
+use App\Http\Controllers\Reservations\ReservationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +37,15 @@ Route::prefix('films')->name('films.')->group(function (): void {
 
 // Consulter les séances et les places restantes, sans compte
 Route::get('seances', [SeancePubliqueController::class, 'index'])->name('seances.index');
+
+// Choisir ses places sur le plan de salle: le plan est public, le blocage demande un compte spectateur.
+Route::get('seances/{seance}/plan', [PlanDeSalleController::class, 'show'])->whereNumber('seance')->name('seances.plan');
+Route::middleware('auth:api')->group(function (): void {
+    Route::post('seances/{seance}/reservations', [ReservationController::class, 'store'])
+        ->whereNumber('seance')->middleware('role:spectateur')->name('reservations.store');
+    Route::get('reservations/{reservation}', [ReservationController::class, 'show'])->whereNumber('reservation')->name('reservations.show');
+    Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->whereNumber('reservation')->name('reservations.destroy');
+});
 
 // Créer un compte et se connecter
 Route::prefix('auth')->name('auth.')->group(function (): void {

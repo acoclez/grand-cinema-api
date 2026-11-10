@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\StatutReservation;
 use Database\Factories\BilletFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +34,23 @@ class Billet extends Model
             'prix_centimes' => 'integer',
             'utilise_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Billets qui occupent leur place: réservation confirmée, ou en attente avec un blocage
+     * encore en cours. Le plan de salle ne dépend donc pas du passage de la tâche
+     * qui expire les blocages dépassés.
+     *
+     * @param  Builder<Billet>  $query
+     */
+    #[Scope]
+    protected function occupantSaPlace(Builder $query): void
+    {
+        $query->whereHas('reservation', fn (Builder $reservation) => $reservation
+            ->where('statut', StatutReservation::Confirmee)
+            ->orWhere(fn (Builder $enAttente) => $enAttente
+                ->where('statut', StatutReservation::EnAttente)
+                ->where('expire_at', '>', now())));
     }
 
     /**
