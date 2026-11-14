@@ -18,7 +18,7 @@ class PlanDeSalleController extends Controller
      * Afficher le plan de salle d'une séance.
      *
      * Toutes les places de la salle, libres ou occupées, et celles réservées aux personnes à
-     * mobilité réduite. Une place est occupée quand elle est vendue ou bloquée par une
+     * mobilité réduite, ainsi que les tarifs de la séance. Le guichet lit le même plan. Une place est occupée quand elle est vendue ou bloquée par une
      * réservation en cours de paiement. L'application web relit le plan toutes les 5 secondes.
      * Une séance en brouillon ou dont le film est archivé n'a pas de plan public (404).
      *
@@ -26,7 +26,7 @@ class PlanDeSalleController extends Controller
      */
     public function show(Seance $seance): PlanDeSalleResource
     {
-        $seance->load(['film', 'salle.places' => fn ($places) => $places->orderBy('rangee')->orderBy('numero')]);
+        $seance->load(['film', 'tarifs', 'salle.places' => fn ($places) => $places->orderBy('rangee')->orderBy('numero')]);
         abort_unless($seance->estVisibleDuPublic(), 404);
 
         $occupees = Billet::query()

@@ -88,6 +88,6 @@ class ReservationController extends Controller
 
     private function charger(Reservation $reservation): Reservation
     {
-        return $reservation->load(['seance.film', 'seance.salle', 'billets.place']);
+        return $reservation->load(Reservation::RELATIONS_AFFICHEES);
     }
 }

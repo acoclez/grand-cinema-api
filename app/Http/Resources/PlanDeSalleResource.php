@@ -5,12 +5,13 @@ namespace App\Http\Resources;
 use App\Models\Place;
 use App\Models\Reservation;
 use App\Models\Seance;
+use App\Models\Tarif;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Plan de salle d'une séance: chaque place avec sa rangée, son numéro, si elle est
- * réservée aux personnes à mobilité réduite et si elle est libre.
+ * réservée aux personnes à mobilité réduite et si elle est libre, et les tarifs de la séance.
  *
  * @mixin Seance
  */
@@ -55,6 +56,12 @@ class PlanDeSalleResource extends JsonResource
             'places_max' => Reservation::PLACES_MAX,
             'blocage_minutes' => Reservation::BLOCAGE_MINUTES,
             'places_libres' => $this->salle->places->count() - count($occupees),
+            // Tarifs de la séance, dans l'ordre où l'administrateur les a saisis.
+            'tarifs' => $this->tarifs->map(fn (Tarif $tarif) => [
+                'id' => $tarif->id,
+                'libelle' => $tarif->libelle,
+                'prix_centimes' => $tarif->prix_centimes,
+            ])->values(),
             // Places triées par rangée puis par numéro.
             'places' => $this->salle->places->map(fn (Place $place) => [
                 'id' => $place->id,
