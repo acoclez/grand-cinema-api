@@ -75,6 +75,20 @@ return [
             'distinct' => 'Une même place est choisie deux fois.',
             'exists' => 'Cette place n\'existe pas dans la salle de la séance.',
         ],
+        'billets' => [
+            'required' => 'Choisissez au moins une place.',
+            'min' => 'Choisissez au moins une place.',
+            'max' => 'La salle ne compte que :max places.',
+        ],
+        'billets.*.place_id' => [
+            'required' => 'Choisissez une place pour chaque billet.',
+            'distinct' => 'Une même place est choisie deux fois.',
+            'exists' => 'Cette place n\'existe pas dans la salle de la séance.',
+        ],
+        'billets.*.tarif_id' => [
+            'required' => 'Choisissez un tarif pour chaque place.',
+            'exists' => 'Ce tarif n\'existe pas pour cette séance.',
+        ],
     ],
 
     'attributes' => [

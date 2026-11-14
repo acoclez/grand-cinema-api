@@ -6,24 +6,18 @@ use App\Enums\CanalVente;
 use App\Enums\StatutReservation;
 use App\Exceptions\PlacesDejaPrisesException;
 use App\Exceptions\RegleMetierException;
-use App\Models\Billet;
-use App\Models\Place;
 use App\Models\Reservation;
 use App\Models\Seance;
 use App\Models\User;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 
 /**
- * Bloque des places d'une séance pendant 10 minutes, le temps du paiement.
- *
- * La base de données arbitre les demandes simultanées: la contrainte d'unicité
- * (séance, place) de la table billets refuse la seconde écriture. La réservation et ses
- * billets sont créés dans une même transaction: si un billet est refusé, rien n'est
- * enregistré et le spectateur apprend quelles places viennent d'être prises.
+ * Bloque des places d'une séance pendant 10 minutes, le temps du paiement en ligne.
+ * Les demandes simultanées sont arbitrées par AttributionDesPlaces.
  */
-class BlocageDesPlaces
+readonly class BlocageDesPlaces
 {
+    public function __construct(private AttributionDesPlaces $attribution) {}
+
     /**
      * @param  list<int>  $placeIds  Places de la salle de la séance, déjà validées
      *
@@ -32,39 +26,30 @@ class BlocageDesPlaces
      */
     public function bloquer(Seance $seance, array $placeIds, ?User $spectateur, CanalVente $canal): Reservation
     {
-        $seance->verifierReservable();
+        return $this->attribution->attribuer($seance, $placeIds, function () use ($seance, $placeIds, $spectateur, $canal): Reservation {
+            if ($spectateur !== null) {
+                $this->abandonnerLaSelectionEnCours($seance, $spectateur);
+            }
 
-        try {
-            return DB::transaction(function () use ($seance, $placeIds, $spectateur, $canal): Reservation {
-                // Les blocages dépassés libèrent leurs places sans attendre la tâche planifiée.
-                Reservation::expirerLesBlocagesDepasses($seance->id);
+            $reservation = Reservation::create([
+                'user_id' => $spectateur?->id,
+                'seance_id' => $seance->id,
+                'statut' => StatutReservation::EnAttente,
+                'canal' => $canal,
+                'expire_at' => now()->addMinutes(Reservation::BLOCAGE_MINUTES),
+            ]);
 
-                if ($spectateur !== null) {
-                    $this->abandonnerLaSelectionEnCours($seance, $spectateur);
-                }
-
-                $reservation = Reservation::create([
-                    'user_id' => $spectateur?->id,
+            foreach ($placeIds as $placeId) {
+                // Le tarif et le prix sont choisis à l'étape du paiement.
+                $reservation->billets()->create([
                     'seance_id' => $seance->id,
-                    'statut' => StatutReservation::EnAttente,
-                    'canal' => $canal,
-                    'expire_at' => now()->addMinutes(Reservation::BLOCAGE_MINUTES),
+                    'place_id' => $placeId,
+                    'prix_centimes' => 0,
                 ]);
+            }
 
-                foreach ($placeIds as $placeId) {
-                    // Le tarif et le prix sont choisis à l'étape du paiement.
-                    $reservation->billets()->create([
-                        'seance_id' => $seance->id,
-                        'place_id' => $placeId,
-                        'prix_centimes' => 0,
-                    ]);
-                }
-
-                return $reservation;
-            });
-        } catch (UniqueConstraintViolationException) {
-            throw $this->placesDejaPrises($seance, $placeIds);
-        }
+            return $reservation;
+        });
     }
 
     /**
@@ -79,25 +64,5 @@ class BlocageDesPlaces
             ->where('statut', StatutReservation::EnAttente)
             ->get()
             ->each(fn (Reservation $reservation) => $reservation->liberer(StatutReservation::Annulee));
-    }
-
-    /**
-     * @param  list<int>  $placeIds
-     */
-    private function placesDejaPrises(Seance $seance, array $placeIds): PlacesDejaPrisesException
-    {
-        $prises = Place::query()
-            ->whereIn('id', Billet::query()
-                ->where('seance_id', $seance->id)
-                ->whereIn('place_id', $placeIds)
-                ->select('place_id'))
-            ->orderBy('rangee')
-            ->orderBy('numero')
-            ->get();
-
-        return new PlacesDejaPrisesException(
-            $prises->pluck('id')->map(fn ($id) => (int) $id)->values()->all(),
-            $prises->map(fn (Place $place) => $place->libelle())->values()->all(),
-        );
     }
 }

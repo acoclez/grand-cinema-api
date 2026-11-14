@@ -34,6 +34,9 @@ class Reservation extends Model
     /** Nombre maximal de places par réservation en ligne. */
     public const int PLACES_MAX = 10;
 
+    /** Relations lues par ReservationResource, à charger avant de répondre. */
+    public const array RELATIONS_AFFICHEES = ['seance.film', 'seance.salle', 'billets.place', 'billets.tarif'];
+
     protected static function booted(): void
     {
         static::creating(function (Reservation $reservation): void {

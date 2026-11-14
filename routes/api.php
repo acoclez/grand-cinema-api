@@ -6,6 +6,7 @@ use App\Http\Controllers\Administration\SeanceController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Comptes\ProfilController;
+use App\Http\Controllers\Guichet\VenteController;
 use App\Http\Controllers\Programmation\FilmAlAfficheController;
 use App\Http\Controllers\Programmation\SeancePubliqueController;
 use App\Http\Controllers\Reservations\PlanDeSalleController;
@@ -46,6 +47,10 @@ Route::middleware('auth:api')->group(function (): void {
     Route::get('reservations/{reservation}', [ReservationController::class, 'show'])->whereNumber('reservation')->name('reservations.show');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->whereNumber('reservation')->name('reservations.destroy');
 });
+
+// Vendre des places au guichet, sur le même plan de salle que le site
+Route::post('guichet/seances/{seance}/ventes', [VenteController::class, 'store'])
+    ->whereNumber('seance')->middleware(['auth:api', 'role:agent,administrateur'])->name('guichet.ventes.store');
 
 // Créer un compte et se connecter
 Route::prefix('auth')->name('auth.')->group(function (): void {
