@@ -7,6 +7,8 @@ use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Comptes\ProfilController;
 use App\Http\Controllers\Guichet\VenteController;
+use App\Http\Controllers\Paiements\NotificationStripeController;
+use App\Http\Controllers\Paiements\PaiementController;
 use App\Http\Controllers\Programmation\FilmAlAfficheController;
 use App\Http\Controllers\Programmation\SeancePubliqueController;
 use App\Http\Controllers\Reservations\PlanDeSalleController;
@@ -46,7 +48,16 @@ Route::middleware('auth:api')->group(function (): void {
         ->whereNumber('seance')->middleware('role:spectateur')->name('reservations.store');
     Route::get('reservations/{reservation}', [ReservationController::class, 'show'])->whereNumber('reservation')->name('reservations.show');
     Route::delete('reservations/{reservation}', [ReservationController::class, 'destroy'])->whereNumber('reservation')->name('reservations.destroy');
+
+    // Choisir ses tarifs et payer en ligne
+    Route::post('reservations/{reservation}/paiement', [PaiementController::class, 'store'])
+        ->whereNumber('reservation')->middleware('role:spectateur')->name('reservations.paiement');
+    Route::post('reservations/{reservation}/paiement/verification', [PaiementController::class, 'verifier'])
+        ->whereNumber('reservation')->middleware('role:spectateur')->name('reservations.paiement.verification');
 });
+
+// Résultat des paiements, envoyé par Stripe: la signature remplace l'authentification.
+Route::post('paiements/stripe/notifications', NotificationStripeController::class)->name('paiements.notifications');
 
 // Vendre des places au guichet, sur le même plan de salle que le site
 Route::post('guichet/seances/{seance}/ventes', [VenteController::class, 'store'])

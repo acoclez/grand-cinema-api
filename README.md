@@ -75,9 +75,31 @@ Variables d'environnement de l'application PHP (la base MySQL liée ajoute les v
 | `APP_KEY` | Clé générée par `php artisan key:generate --show` |
 | `APP_URL` | Adresse de l'API, par exemple `https://grand-cinema-api.cleverapps.io` |
 | `APP_DEMONSTRATION` | `true`: les séances d'exemple sont reprogrammées chaque nuit pour les 7 jours à venir |
-| `FRONTEND_URL` | Adresse de l'application web, autorisée par CORS et utilisée dans les e-mails |
+| `FRONTEND_URL` | Adresse complète de l'application web, avec `https://` et sans `/` final, par exemple `https://grand-cinema.cleverapps.io`: autorisée par CORS et utilisée dans les e-mails |
 | `JWT_SECRET` | Clé générée par `php artisan jwt:secret --show` |
 | `DB_CONNECTION` | `mysql` |
 | `LOG_CHANNEL` | `stderr`, pour lire les journaux dans la console Clever Cloud |
 | `QUEUE_CONNECTION` | `sync` |
 | `MAIL_MAILER` | `log`: en démonstration, les e-mails sont écrits dans les journaux |
+| `STRIPE_SECRET` | Clé secrète du mode test de Stripe, `sk_test_…` |
+| `STRIPE_WEBHOOK_SECRET` | Secret de signature de la destination d'événements Stripe, `whsec_…` |
+
+## Paiement en ligne (Stripe)
+
+Le spectateur paie sur la page Stripe Checkout: l'API ne reçoit ni n'enregistre aucune donnée de carte, seulement l'identifiant de la session de paiement (table `paiements`). La préproduction utilise le mode test de Stripe: aucun paiement réel.
+
+- Carte de test acceptée: `4242 4242 4242 4242`, une date d'expiration future, n'importe quel code à 3 chiffres.
+- Carte de test refusée: `4000 0000 0000 0002`.
+
+Le résultat du paiement arrive par deux chemins, traités par le même code et une seule fois:
+
+1. au retour du spectateur, l'application web appelle `POST /api/reservations/{reservation}/paiement/verification`, qui interroge Stripe;
+2. Stripe envoie une notification signée à `POST /api/paiements/stripe/notifications` (webhook).
+
+Configuration, dans le tableau de bord Stripe en mode test:
+
+1. Développeurs, Clés API: copier la clé secrète dans `STRIPE_SECRET`.
+2. Paramètres, Moyens de paiement: garder seulement les cartes. La page Checkout propose les moyens activés ici, l'API Stripe n'accepte plus de les choisir à la création de la session.
+3. Développeurs, Webhooks: ajouter une destination vers `https://grand-cinema-api.cleverapps.io/api/paiements/stripe/notifications` avec les événements `checkout.session.completed` et `checkout.session.expired`, puis copier son secret de signature dans `STRIPE_WEBHOOK_SECRET`.
+
+En local, sans webhook, la vérification au retour suffit à confirmer la réservation. Pour recevoir aussi les notifications: `stripe listen --forward-to localhost:8000/api/paiements/stripe/notifications` (Stripe CLI), qui affiche le secret `whsec_…` à mettre dans `.env`.

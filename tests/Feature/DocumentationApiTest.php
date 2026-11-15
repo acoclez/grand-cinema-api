@@ -65,6 +65,17 @@ class DocumentationApiTest extends TestCase
             ]]);
     }
 
+    public function test_la_documentation_decrit_le_paiement_en_ligne(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => [
+                '/reservations/{reservation}/paiement' => ['post'],
+                '/reservations/{reservation}/paiement/verification' => ['post'],
+                '/paiements/stripe/notifications' => ['post'],
+            ]]);
+    }
+
     public function test_la_documentation_decrit_les_seances_publiees(): void
     {
         $this->getJson('/docs/api.json')

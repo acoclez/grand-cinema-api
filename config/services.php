@@ -28,6 +28,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Paiement en ligne (US-09): clés du mode test de Stripe en préproduction.
+    'stripe' => [
+        // Clé secrète de l'API, sk_test_…
+        'secret' => env('STRIPE_SECRET'),
+        // Secret de signature des notifications (webhook), whsec_…
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

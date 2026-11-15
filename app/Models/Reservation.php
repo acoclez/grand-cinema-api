@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\CanalVente;
 use App\Enums\StatutReservation;
+use App\Events\ReservationLiberee;
 use Database\Factories\ReservationFactory;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,7 +37,7 @@ class Reservation extends Model
     public const int PLACES_MAX = 10;
 
     /** Relations lues par ReservationResource, à charger avant de répondre. */
-    public const array RELATIONS_AFFICHEES = ['seance.film', 'seance.salle', 'billets.place', 'billets.tarif'];
+    public const array RELATIONS_AFFICHEES = ['seance.film', 'seance.salle', 'seance.tarifs', 'billets.place', 'billets.tarif', 'paiements'];
 
     protected static function booted(): void
     {
@@ -101,6 +103,14 @@ class Reservation extends Model
     }
 
     /**
+     * La réservation appartient au compte connecté. Une vente au guichet n'appartient à personne.
+     */
+    public function appartientA(?Authenticatable $utilisateur): bool
+    {
+        return $utilisateur instanceof User && $this->user_id === $utilisateur->id;
+    }
+
+    /**
      * Les places sont bloquées pour le spectateur: réservation en attente et blocage en cours.
      */
     public function estBloquee(): bool
@@ -125,7 +135,7 @@ class Reservation extends Model
 
     /**
      * Libère les places: les billets sont supprimés et la réservation garde son historique
-     * avec le statut indiqué (annulée par le spectateur ou expirée).
+     * avec le statut indiqué (annulée par le spectateur ou expirée). Elle ne peut plus être payée.
      */
     public function liberer(StatutReservation $statut): void
     {
@@ -133,6 +143,9 @@ class Reservation extends Model
             $this->billets()->delete();
             $this->update(['statut' => $statut, 'expire_at' => null]);
         });
+
+        // La page de paiement encore ouverte chez le prestataire est fermée.
+        ReservationLiberee::dispatch($this);
     }
 
     /**
