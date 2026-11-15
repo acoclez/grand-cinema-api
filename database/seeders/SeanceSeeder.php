@@ -10,10 +10,15 @@ use App\Models\Seance;
 use Illuminate\Database\Seeder;
 
 /**
- * Séances d'exemple
+ * Séances d'exemple: trois séances par salle et par jour, pour les 7 jours à venir.
+ * Seuls les jours sans séance sont programmés: relancé chaque jour sur l'environnement de
+ * démonstration, le seeder garde donc toujours une semaine de séances à réserver.
  */
 class SeanceSeeder extends Seeder
 {
+    /** Nombre de jours programmés à l'avance, aujourd'hui compris. */
+    public const int JOURS = 7;
+
     private const array HORAIRES = ['14:00', '17:30', '20:30'];
 
     private const array TARIFS = [
@@ -24,10 +29,6 @@ class SeanceSeeder extends Seeder
 
     public function run(): void
     {
-        if (Seance::exists()) {
-            return;
-        }
-
         $films = Film::all();
         $salles = Salle::orderBy('id')->get();
 
@@ -37,7 +38,13 @@ class SeanceSeeder extends Seeder
 
         $compteur = 0;
 
-        for ($jour = 0; $jour < 7; $jour++) {
+        for ($jour = 0; $jour < self::JOURS; $jour++) {
+            $date = today()->addDays($jour);
+
+            if (Seance::whereDate('debut', $date)->exists()) {
+                continue;
+            }
+
             foreach ($salles as $salle) {
                 foreach (self::HORAIRES as $horaire) {
                     $film = $films[$compteur % $films->count()];
@@ -46,7 +53,7 @@ class SeanceSeeder extends Seeder
                     $seance = Seance::create([
                         'film_id' => $film->id,
                         'salle_id' => $salle->id,
-                        'debut' => now()->addDays($jour)->setTimeFromTimeString($horaire),
+                        'debut' => $date->copy()->setTimeFromTimeString($horaire),
                         'langue' => $compteur % 3 === 0 ? LangueSeance::Vo : LangueSeance::Vf,
                         'statut' => StatutSeance::Publiee,
                     ]);

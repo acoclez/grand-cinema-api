@@ -51,3 +51,33 @@ Prérequis : PHP 8.5, Composer, une base MySQL `grand_cinema` (voir `.env.exampl
 | `vendor/bin/pint --test` | Vérification du style de code |
 | `vendor/bin/phpstan analyse` | Analyse statique |
 | `php artisan schedule:work` | Tâches planifiées en local, dont l'expiration des réservations non payées chaque minute (en production, `php artisan schedule:run` lancé chaque minute) |
+
+## Déploiement (Clever Cloud)
+
+L'environnement de démonstration de l'examen est une préproduction minimale, déployée depuis `develop`: une instance PHP nano, une base MySQL DEV liée à l'application, et l'application web sur une application statique. La production du cinéma reprendrait la configuration chiffrée au bloc 1 (2 à 4 instances XS, MySQL XS Small Space).
+
+L'application Clever Cloud suit la branche `develop` du dépôt GitHub: chaque fusion d'une merge request la redéploie. Une branche protégée n'accepte une merge request qu'avec l'intégration continue au vert, donc seul du code testé est déployé.
+
+Fichiers lus par Clever Cloud:
+
+- `clevercloud/post_build.sh`: après chaque build, les migrations, puis les données de démonstration. Les seeders ne créent que ce qui manque: relancés, ils ne créent aucun doublon.
+- `clevercloud/cron.json` et `clevercloud/cron.sh`: le planificateur de Laravel chaque minute, sur chaque instance. Chaque tâche ne tourne que sur une instance à la fois (`onOneServer`), grâce au verrou pris dans le cache en base.
+
+Variables d'environnement de l'application PHP (la base MySQL liée ajoute les variables `MYSQL_ADDON_*`, lues par `config/database.php`):
+
+| Variable | Valeur |
+|---|---|
+| `CC_PHP_VERSION` | `8.5` |
+| `CC_WEBROOT` | `/public` |
+| `CC_POST_BUILD_HOOK` | `bash clevercloud/post_build.sh` |
+| `APP_ENV` | `production` |
+| `APP_DEBUG` | `false` |
+| `APP_KEY` | Clé générée par `php artisan key:generate --show` |
+| `APP_URL` | Adresse de l'API, par exemple `https://grand-cinema-api.cleverapps.io` |
+| `APP_DEMONSTRATION` | `true`: les séances d'exemple sont reprogrammées chaque nuit pour les 7 jours à venir |
+| `FRONTEND_URL` | Adresse de l'application web, autorisée par CORS et utilisée dans les e-mails |
+| `JWT_SECRET` | Clé générée par `php artisan jwt:secret --show` |
+| `DB_CONNECTION` | `mysql` |
+| `LOG_CHANNEL` | `stderr`, pour lire les journaux dans la console Clever Cloud |
+| `QUEUE_CONNECTION` | `sync` |
+| `MAIL_MAILER` | `log`: en démonstration, les e-mails sont écrits dans les journaux |

@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Derrière le répartiteur de charge de l'hébergeur: l'adresse IP du client (limite de
+        // tentatives de connexion) et le protocole HTTPS viennent des en-têtes X-Forwarded-*.
+        $middleware->trustProxies(at: '*');
         $middleware->alias(['role' => VerifierRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
