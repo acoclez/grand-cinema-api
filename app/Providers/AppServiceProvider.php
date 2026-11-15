@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\Paiements\PrestataireDePaiement;
+use App\Services\Paiements\StripeCheckout;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -19,6 +21,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +30,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Le paiement en ligne passe par Stripe; les tests remplacent ce prestataire par un double.
+        $this->app->bind(PrestataireDePaiement::class, fn (): PrestataireDePaiement => new StripeCheckout(
+            new StripeClient(['api_key' => Config::get('services.stripe.secret') ?: null]),
+            (string) Config::get('services.stripe.webhook_secret'),
+        ));
     }
 
     /**

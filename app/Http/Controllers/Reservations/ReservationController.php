@@ -83,7 +83,7 @@ class ReservationController extends Controller
 
     private function verifierProprietaire(Request $request, Reservation $reservation): void
     {
-        abort_unless($reservation->user_id === $this->spectateur($request)->id, 404);
+        abort_unless($reservation->appartientA($request->user()), 404);
     }
 
     private function charger(Reservation $reservation): Reservation

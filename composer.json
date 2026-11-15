@@ -10,7 +10,8 @@
         "dedoc/scramble": "^0.13.52",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "php-open-source-saver/jwt-auth": "^2.9"
+        "php-open-source-saver/jwt-auth": "^2.9",
+        "stripe/stripe-php": "^23.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
