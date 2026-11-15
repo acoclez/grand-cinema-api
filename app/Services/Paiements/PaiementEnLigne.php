@@ -4,6 +4,7 @@ namespace App\Services\Paiements;
 
 use App\Enums\StatutPaiement;
 use App\Enums\StatutReservation;
+use App\Events\ReservationConfirmee;
 use App\Exceptions\RegleMetierException;
 use App\Models\Paiement;
 use App\Models\Reservation;
@@ -120,6 +121,9 @@ readonly class PaiementEnLigne
 
             $paiement->update(['statut' => StatutPaiement::Accepte]);
             $reservation->update(['statut' => StatutReservation::Confirmee, 'expire_at' => null]);
+
+            // Les billets partent par e-mail une fois la transaction validée.
+            ReservationConfirmee::dispatch($reservation);
 
             return null;
         });
