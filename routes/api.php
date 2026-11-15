@@ -3,6 +3,7 @@
 use App\Http\Controllers\Administration\FilmController;
 use App\Http\Controllers\Administration\SalleController;
 use App\Http\Controllers\Administration\SeanceController;
+use App\Http\Controllers\Billets\BilletController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Comptes\ProfilController;
@@ -54,6 +55,12 @@ Route::middleware('auth:api')->group(function (): void {
         ->whereNumber('reservation')->middleware('role:spectateur')->name('reservations.paiement');
     Route::post('reservations/{reservation}/paiement/verification', [PaiementController::class, 'verifier'])
         ->whereNumber('reservation')->middleware('role:spectateur')->name('reservations.paiement.verification');
+
+    // Recevoir son billet électronique
+    Route::middleware('role:spectateur')->group(function (): void {
+        Route::get('billets', [BilletController::class, 'index'])->name('billets.index');
+        Route::get('billets/{billet}/pdf', [BilletController::class, 'pdf'])->whereNumber('billet')->name('billets.pdf');
+    });
 });
 
 // Résultat des paiements, envoyé par Stripe: la signature remplace l'authentification.

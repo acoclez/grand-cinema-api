@@ -8,6 +8,7 @@ Elle sert l'application web [grand-cinema-web](https://github.com/acoclez/grand-
 - PHP 8.5, Laravel 13, Eloquent ORM, MySQL 8.
 - Authentification par jetons JWT (`php-open-source-saver/jwt-auth`).
 - Documentation OpenAPI générée par Scramble, consultable sur `/docs/api`.
+- Paiement en ligne par Stripe Checkout (`stripe/stripe-php`), billets PDF avec QR code (`barryvdh/laravel-dompdf`, `chillerlan/php-qrcode`), e-mails par Brevo en SMTP.
 - Qualité : Laravel Pint (style PSR-12), Larastan (analyse statique), PHPUnit (tests et couverture), SonarCloud.
 - Intégration continue : GitHub Actions, à chaque merge request vers `develop` et à chaque push sur `develop` et `main`.
 
@@ -79,8 +80,14 @@ Variables d'environnement de l'application PHP (la base MySQL liée ajoute les v
 | `JWT_SECRET` | Clé générée par `php artisan jwt:secret --show` |
 | `DB_CONNECTION` | `mysql` |
 | `LOG_CHANNEL` | `stderr`, pour lire les journaux dans la console Clever Cloud |
-| `QUEUE_CONNECTION` | `sync` |
-| `MAIL_MAILER` | `log`: en démonstration, les e-mails sont écrits dans les journaux |
+| `QUEUE_CONNECTION` | `database`: les e-mails partent par la file d'attente, vidée chaque minute par le planificateur |
+| `MAIL_MAILER` | `smtp` |
+| `MAIL_HOST` | `smtp-relay.brevo.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_USERNAME` | Identifiant SMTP du compte Brevo |
+| `MAIL_PASSWORD` | Clé SMTP créée dans Brevo |
+| `MAIL_FROM_ADDRESS` | Adresse d'expédition validée dans Brevo |
+| `MAIL_FROM_NAME` | `Le Grand Cinéma` |
 | `STRIPE_SECRET` | Clé secrète du mode test de Stripe, `sk_test_…` |
 | `STRIPE_WEBHOOK_SECRET` | Secret de signature de la destination d'événements Stripe, `whsec_…` |
 
@@ -103,3 +110,18 @@ Configuration, dans le tableau de bord Stripe en mode test:
 3. Développeurs, Webhooks: ajouter une destination vers `https://grand-cinema-api.cleverapps.io/api/paiements/stripe/notifications` avec les événements `checkout.session.completed` et `checkout.session.expired`, puis copier son secret de signature dans `STRIPE_WEBHOOK_SECRET`.
 
 En local, sans webhook, la vérification au retour suffit à confirmer la réservation. Pour recevoir aussi les notifications: `stripe listen --forward-to localhost:8000/api/paiements/stripe/notifications` (Stripe CLI), qui affiche le secret `whsec_…` à mettre dans `.env`.
+
+## Billets électroniques et e-mails (Brevo)
+
+Quand le paiement d'une réservation est accepté, le spectateur reçoit un e-mail avec un billet PDF par place. Il retrouve aussi ses billets dans « Mes billets » (`GET /api/billets`), et peut télécharger chaque PDF (`GET /api/billets/{billet}/pdf`).
+
+- Le QR code d'un billet contient seulement son jeton: 48 caractères aléatoires, uniques, sans donnée personnelle. Le contrôle à l'entrée retrouvera le billet par ce jeton.
+- Les PDF sont générés à la demande (dompdf, QR code par chillerlan/php-qrcode) et ne sont pas stockés.
+- L'e-mail passe par la file d'attente (`QUEUE_CONNECTION=database`). Le planificateur la vide chaque minute (`queue:work --stop-when-empty`), sans processus permanent. Un envoi en échec est retenté deux fois, à une puis deux minutes d'intervalle: l'e-mail part en moins de 5 minutes.
+
+Configuration de Brevo (offre gratuite, 300 e-mails par jour):
+
+1. Expéditeurs, domaines et IP dédiées: ajouter et valider l'adresse d'expédition, à mettre dans `MAIL_FROM_ADDRESS`.
+2. SMTP et API, onglet SMTP: copier l'identifiant dans `MAIL_USERNAME`, puis générer une clé SMTP et la mettre dans `MAIL_PASSWORD`.
+
+En local, `MAIL_MAILER=log` écrit les e-mails dans `storage/logs/laravel.log`, et `php artisan queue:work` envoie ceux qui attendent dans la file.
