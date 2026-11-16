@@ -10,7 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Réservation en ligne ou vente au guichet: la séance, les places avec leur tarif et leur prix,
- * le montant, le temps restant avant la fin du blocage et le statut du paiement en ligne.
+ * le montant, le temps restant avant la fin du blocage, le statut du paiement en ligne et
+ * l'état de chaque billet.
  *
  * @mixin Reservation
  */
@@ -57,6 +58,8 @@ class ReservationResource extends JsonResource
                 // Tarif choisi pour la place, null tant qu'il n'est pas choisi.
                 'tarif' => $billet->tarif?->libelle,
                 'prix_centimes' => $billet->prix_centimes,
+                // Heure du passage en salle, null tant que le billet n'a pas servi.
+                'utilise_at' => $billet->utilise_at?->toIso8601String(),
             ])->sortBy(['rangee', 'numero'])->values(),
         ];
     }

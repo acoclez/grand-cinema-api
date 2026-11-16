@@ -94,6 +94,16 @@ class DocumentationApiTest extends TestCase
             ->assertJsonStructure(['paths' => ['/controle/seances/{seance}/billets' => ['post']]]);
     }
 
+    public function test_la_documentation_decrit_la_recherche_des_reservations(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => [
+                '/guichet/reservations' => ['get'],
+                '/guichet/reservations/{reservation}' => ['get'],
+            ]]);
+    }
+
     public function test_la_documentation_decrit_les_seances_publiees(): void
     {
         $this->getJson('/docs/api.json')
