@@ -6,4 +6,5 @@ parameters:
         - app
         - routes
         - database
+        - bootstrap/app.php
     level: 6

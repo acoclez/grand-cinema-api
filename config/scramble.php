@@ -56,11 +56,11 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => '',
+        'description' => 'API de réservation du Grand Cinéma. Les routes protégées attendent un jeton JWT, obtenu à l\'inscription ou à la connexion, dans l\'en-tête Authorization: Bearer <jeton>.',
     ],
 
     'ui' => [
-        'title' => null,
+        'title' => 'Grand Cinéma - documentation de l\'API',
     ],
 
     /*

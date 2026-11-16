@@ -53,6 +53,20 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Environnement de démonstration
+    |--------------------------------------------------------------------------
+    |
+    | Activé sur l'environnement déployé pour l'examen: chaque nuit, les séances
+    | d'exemple sont programmées pour les 7 jours à venir, pour que l'application
+    | ait toujours des séances à réserver.
+    |
+    */
+
+    'demonstration' => (bool) env('APP_DEMONSTRATION', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +79,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Les horaires des séances sont saisis, enregistrés et affichés à l'heure de Paris.
+    'timezone' => 'Europe/Paris',
 
     /*
     |--------------------------------------------------------------------------
@@ -78,7 +93,8 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    // Messages en français par défaut, y compris sur l'hébergeur où aucun fichier .env n'est déployé.
+    'locale' => env('APP_LOCALE', 'fr'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

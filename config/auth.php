@@ -42,6 +42,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // L'API authentifie chaque requête par un jeton JWT, sans session
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -63,7 +69,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
+            // Eloquent, sans les comptes supprimés (voir AppServiceProvider).
+            'driver' => 'comptes-actifs',
             'model' => env('AUTH_MODEL', User::class),
         ],
 

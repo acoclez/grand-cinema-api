@@ -1,0 +1,3 @@
+[
+  "* * * * * /bin/bash -l $ROOT/clevercloud/cron.sh"
+]
