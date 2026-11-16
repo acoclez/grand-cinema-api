@@ -115,7 +115,8 @@ En local, sans webhook, la vérification au retour suffit à confirmer la réser
 
 Quand le paiement d'une réservation est accepté, le spectateur reçoit un e-mail avec un billet PDF par place. Il retrouve aussi ses billets dans « Mes billets » (`GET /api/billets`), et peut télécharger chaque PDF (`GET /api/billets/{billet}/pdf`).
 
-- Le QR code d'un billet contient seulement son jeton: 48 caractères aléatoires, uniques, sans donnée personnelle. Le contrôle à l'entrée retrouvera le billet par ce jeton.
+- Le QR code d'un billet contient seulement son jeton: 48 caractères aléatoires, uniques, sans donnée personnelle.
+- À l'entrée, l'agent d'accueil scanne le QR code (`POST /api/controle/seances/{seance}/billets`, le jour de la séance): un billet valide est aussitôt marqué utilisé, un second passage affiche l'heure du premier, un QR code inconnu ou d'une autre séance est refusé.
 - Les PDF sont générés à la demande (dompdf, QR code par chillerlan/php-qrcode) et ne sont pas stockés.
 - L'e-mail passe par la file d'attente (`QUEUE_CONNECTION=database`). Le planificateur la vide chaque minute (`queue:work --stop-when-empty`), sans processus permanent. Un envoi en échec est retenté deux fois, à une puis deux minutes d'intervalle: l'e-mail part en moins de 5 minutes.
 

@@ -87,6 +87,13 @@ class DocumentationApiTest extends TestCase
             ->assertJsonPath('paths./billets/{billet}/pdf.get.responses.200.content.application/pdf.schema.format', 'binary');
     }
 
+    public function test_la_documentation_decrit_le_controle_des_billets(): void
+    {
+        $this->getJson('/docs/api.json')
+            ->assertOk()
+            ->assertJsonStructure(['paths' => ['/controle/seances/{seance}/billets' => ['post']]]);
+    }
+
     public function test_la_documentation_decrit_les_seances_publiees(): void
     {
         $this->getJson('/docs/api.json')
