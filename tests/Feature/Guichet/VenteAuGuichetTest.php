@@ -109,8 +109,8 @@ class VenteAuGuichetTest extends TestCase
             ->assertJsonPath('data.expire_at', null)
             ->assertJsonPath('data.secondes_restantes', 0)
             ->assertJsonPath('data.places', [
-                ['id' => $this->places['A1']->id, 'rangee' => 'A', 'numero' => 1, 'pmr' => false, 'tarif' => 'Réduit', 'prix_centimes' => 700],
-                ['id' => $this->places['B2']->id, 'rangee' => 'B', 'numero' => 2, 'pmr' => false, 'tarif' => 'Plein', 'prix_centimes' => 950],
+                ['id' => $this->places['A1']->id, 'rangee' => 'A', 'numero' => 1, 'pmr' => false, 'tarif' => 'Réduit', 'prix_centimes' => 700, 'utilise_at' => null],
+                ['id' => $this->places['B2']->id, 'rangee' => 'B', 'numero' => 2, 'pmr' => false, 'tarif' => 'Plein', 'prix_centimes' => 950, 'utilise_at' => null],
             ]);
         $this->assertMatchesRegularExpression('/^R-[A-HJ-NP-Z2-9]{8}$/', $reponse->json('data.numero'));
         $this->assertDatabaseHas('reservations', [
