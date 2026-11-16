@@ -7,6 +7,7 @@ use App\Http\Controllers\Billets\BilletController;
 use App\Http\Controllers\Comptes\AuthentificationController;
 use App\Http\Controllers\Comptes\MotDePasseController;
 use App\Http\Controllers\Comptes\ProfilController;
+use App\Http\Controllers\Controle\ControleBilletController;
 use App\Http\Controllers\Guichet\VenteController;
 use App\Http\Controllers\Paiements\NotificationStripeController;
 use App\Http\Controllers\Paiements\PaiementController;
@@ -69,6 +70,10 @@ Route::post('paiements/stripe/notifications', NotificationStripeController::clas
 // Vendre des places au guichet, sur le même plan de salle que le site
 Route::post('guichet/seances/{seance}/ventes', [VenteController::class, 'store'])
     ->whereNumber('seance')->middleware(['auth:api', 'role:agent,administrateur'])->name('guichet.ventes.store');
+
+// Contrôler un billet à l'entrée de la salle, en scannant son QR code
+Route::post('controle/seances/{seance}/billets', [ControleBilletController::class, 'store'])
+    ->whereNumber('seance')->middleware(['auth:api', 'role:agent,administrateur'])->name('controle.billets.store');
 
 // Créer un compte et se connecter
 Route::prefix('auth')->name('auth.')->group(function (): void {
